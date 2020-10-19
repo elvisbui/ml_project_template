@@ -68,7 +68,7 @@ class CrossValidation:
             targets = self.dataframe[self.target_cols[0]].apply(
                 lambda x: len(str(x).split(self.multilabel_delimiter)))
             kf = StratifiedKFold(n_splits=self.num_folds)
-            for fold(train_idx, val_idx) in enumerate(kf.split(X=self.dataframe, y=targets)):
+            for fold, (train_idx, val_idx) in enumerate(kf.split(X=self.dataframe, y=targets)):
                 self.dataframe.loc[val_idx, 'kfold'] = fold
 
         else:
@@ -79,6 +79,8 @@ class CrossValidation:
 
 if __name__ == '__main__':
     df = pd.read_csv('../input/train_multilabel.csv')
-    cv = CrossValidation(df, shuffle=True,
-                         target_cols=['attribute_ids'],
+    cv = CrossValidation(df, shuffle=True, target_cols=['attribute_ids'],
                          problem_type='multilabel_classification', multilabel_delimiter=" ")
+    df_split = cv.split()
+    print(df_split.head())
+    print(df_split.kfold.value_count())
